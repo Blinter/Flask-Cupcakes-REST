@@ -3,8 +3,6 @@ from unittest import TestCase
 from app import app
 from models import db, Cupcake
 from flask import json, jsonify
-# Additional Testing
-# from models import Pet, db, connect_db
 
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///sqla_intro_test5'
@@ -18,7 +16,6 @@ with app.app_context():
 
 class CupcakesTestCase(TestCase):
     """Tests for views for Cupcakes."""
-
     def setUp(self):
         """Clean up any existing Cupcake."""
         with app.app_context():
@@ -50,6 +47,7 @@ class CupcakesTestCase(TestCase):
                 db.session.rollback()
 
     def test_get(self):
+        """Check for valid Cupcake"""
         with app.app_context():
             with app.test_client() as client:
                 resp = client.get("/api/cupcakes")
@@ -58,6 +56,7 @@ class CupcakesTestCase(TestCase):
                 self.assertIn('''Lemon''', html)
 
     def test_cupcake_page(self):
+        """Check that index does not populate cupcake page initially"""
         with app.app_context():
             with app.test_client() as client:
                 resp = client.get("/")
@@ -66,6 +65,7 @@ class CupcakesTestCase(TestCase):
                 self.assertNotIn("data-id", html)
 
     def test_cupcake_add(self):
+        """Check cupcake can be added then queried"""
         with app.app_context():
             with app.test_client() as client:
                 resp = client.post("/api/cupcakes", data=dict({
@@ -81,6 +81,7 @@ class CupcakesTestCase(TestCase):
                 self.assertIn('''"id": 7''', html)
 
     def test_cupcake_delete(self):
+        """Check cupcake can be deleted successfully"""
         with app.app_context():
             with app.test_client() as client:
                 resp = client.post("/api/cupcakes", data=dict({
@@ -99,6 +100,7 @@ class CupcakesTestCase(TestCase):
                 self.assertEqual(resp.status_code, 404)
 
     def test_cupcake_notfound(self):
+        """Check cupcake cannot be found"""
         with app.app_context():
             with app.test_client() as client:
                 resp = client.get("/api/cupcakes/7")
@@ -106,6 +108,7 @@ class CupcakesTestCase(TestCase):
                 self.assertEqual(resp.status_code, 404)
 
     def test_cupcake_edit(self):
+        """Check cupcake can be edited"""
         with app.app_context():
             with app.test_client() as client:
                 resp = client.patch("/api/cupcakes/6", data=dict({
